@@ -2,18 +2,25 @@
 #include "blackbox.h"
 
 int main() {
-	int n;
-	scanf("%d", &n);
-	blackbox_init(n);
+    int n;
+    scanf("%d", &n);
+    blackbox_init(n);
 
-	const size_t num_steps = 1e8;
-	const double h = 2.0 / num_steps;
+    const size_t k = 1e8;
+    const double h = 2.0 / k;
+    const double double_h = 2*h;
+    const double h_div_3 = h/3;
+    double sum = 0;
 
-	double sum = 0;
-	const double x0 = -1 + h/2;
-	for (size_t i = 0; i < num_steps; i++) {
-		sum += blackbox(-1 + 0.5*h + i*h) * h;
-	}
+    double start = -1;
+    double finish = 1 - double_h;
+    double blackbox_prev = blackbox(start);
+    while(start <= finish) {
+        double right_part = blackbox(start + double_h);
+        sum += (blackbox_prev + 4*blackbox(start + h) + right_part);
+        blackbox_prev = right_part;
+        start = start + double_h;
+    }
 
-	printf("%.12lf\n", sum);
+    printf("%.12lf\n", h_div_3*sum);
 }
